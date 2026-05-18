@@ -3,8 +3,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Bot,
-  X,
   Send,
   MessageCircle,
   Sparkles,
@@ -34,15 +32,18 @@ function TypingDots() {
 
 export function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content:
-        "Hi! I'm your **TerraVista AI** assistant. Ask me about properties, market trends, or anything real estate.",
-      timestamp: Date.now(),
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const initialTimestamp = Date.now()
+    return [
+      {
+        id: "welcome",
+        role: "assistant",
+        content:
+          "Hi! I'm your **TerraVista AI** assistant. Ask me about properties, market trends, or anything real estate.",
+        timestamp: initialTimestamp,
+      },
+    ]
+  })
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -114,7 +115,7 @@ export function ChatbotWidget() {
         )
         await new Promise((r) => setTimeout(r, 25))
       }
-    } catch (err) {
+    } catch {
       if (!controller.signal.aborted) {
         try {
           const response = await sendChatMessage(messages, text)
@@ -151,15 +152,16 @@ export function ChatbotWidget() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-4 sm:left-auto z-50 sm:w-[420px] sm:h-[600px] h-[85vh] flex flex-col overflow-hidden bg-[#0e0e1a]/98 backdrop-blur-2xl sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-violet-500/10"
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <Avatar fallback="AI" className="h-9 w-9 bg-gradient-to-br from-violet-500 to-indigo-600" />
-                <div>
-                  <p className="text-sm font-semibold text-white">TerraVista AI</p>
-                  <p className="text-[11px] text-violet-400">Online • Real Estate Assistant</p>
-                </div>
-              </div>
-              <div className="h-8 w-8 sm:block hidden" />
+            <div className="flex items-center justify-center px-4 py-3 border-b border-white/10 shrink-0">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsOpen(false)}
+                className="h-9 w-9 rounded-full text-white/60 hover:text-white hover:bg-white/5"
+                aria-label="Hide chat"
+              >
+                <ChevronDown className="h-5 w-5" />
+              </Button>
             </div>
 
             <div
@@ -247,15 +249,6 @@ export function ChatbotWidget() {
             </div>
 
             <div className="border-t border-white/10 p-3 pb-16 space-y-2 shrink-0 bg-[#0a0a14]">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsOpen(false)}
-                className="w-full h-10 text-white/50 hover:text-white/80 hover:bg-white/5 text-xs flex items-center justify-center gap-2"
-              >
-                <X className="h-3.5 w-3.5" />
-                Close Chat
-              </Button>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
                 {prompts.slice(0, 3).map((p) => (
                   <button
