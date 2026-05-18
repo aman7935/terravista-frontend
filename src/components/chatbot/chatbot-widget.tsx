@@ -149,7 +149,7 @@ export function ChatbotWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-4 sm:left-auto z-50 sm:w-[420px] sm:h-[600px] flex flex-col overflow-hidden bg-[#0e0e1a]/98 backdrop-blur-2xl sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-violet-500/10"
+            className="fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-4 sm:left-auto z-50 sm:w-[420px] sm:h-[600px] h-[85vh] flex flex-col overflow-hidden bg-[#0e0e1a]/98 backdrop-blur-2xl sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-violet-500/10"
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-2.5">
@@ -246,7 +246,16 @@ export function ChatbotWidget() {
               })}
             </div>
 
-            <div className="border-t border-white/10 p-3 space-y-2 shrink-0 bg-[#0a0a14]">
+            <div className="border-t border-white/10 p-3 pb-16 space-y-2 shrink-0 bg-[#0a0a14]">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsOpen(false)}
+                className="w-full h-10 text-white/50 hover:text-white/80 hover:bg-white/5 text-xs flex items-center justify-center gap-2"
+              >
+                <X className="h-3.5 w-3.5" />
+                Close Chat
+              </Button>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
                 {prompts.slice(0, 3).map((p) => (
                   <button
@@ -275,19 +284,10 @@ export function ChatbotWidget() {
                   disabled={isLoading}
                 />
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  className="h-11 w-11 shrink-0 hover:bg-white/10 sm:hidden flex"
-                >
-                  <X className="h-4 w-4 text-white/60" />
-                </Button>
-                <Button
                   type="submit"
                   size="icon"
                   disabled={!input.trim() || isLoading}
-                  className="h-11 w-11 shrink-0 bg-violet-600 hover:bg-violet-500 sm:bg-violet-600 sm:hover:bg-violet-500"
+                  className="h-11 w-11 shrink-0 bg-violet-600 hover:bg-violet-500"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
@@ -303,11 +303,7 @@ export function ChatbotWidget() {
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-4 sm:right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 transition-shadow"
       >
-        {isOpen ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <MessageCircle className="h-6 w-6" />
-        )}
+        <MessageCircle className="h-6 w-6" />
       </motion.button>
     </>
   )
