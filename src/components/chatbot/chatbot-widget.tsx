@@ -114,27 +114,27 @@ export function ChatbotWidget() {
         )
         await new Promise((r) => setTimeout(r, 25))
       }
-        } catch (err) {
-          if (!controller.signal.aborted) {
-            try {
-              const response = await sendChatMessage(messages, text)
-              const cleaned = response.replace(/^([•\-*]|\d+\.)/gm, "\n  $1")
-              setMessages((prev) => [
-                ...prev,
-                { id: aiId, role: "assistant", content: cleaned, timestamp: Date.now() },
-              ])
-            } catch (fallbackErr) {
-              const detail = fallbackErr instanceof Error ? fallbackErr.message : "Unknown error"
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === aiId
-                    ? { ...m, content: `Sorry, I couldn't process that request. (${detail})` }
-                    : m,
-                ),
-              )
-            }
-          }
-        } finally {
+    } catch (err) {
+      if (!controller.signal.aborted) {
+        try {
+          const response = await sendChatMessage(messages, text)
+          const cleaned = response.replace(/^([•\-*]|\d+\.)/gm, "\n  $1")
+          setMessages((prev) => [
+            ...prev,
+            { id: aiId, role: "assistant", content: cleaned, timestamp: Date.now() },
+          ])
+        } catch (fallbackErr) {
+          const detail = fallbackErr instanceof Error ? fallbackErr.message : "Unknown error"
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === aiId
+                ? { ...m, content: `Sorry, I couldn't process that request. (${detail})` }
+                : m,
+            ),
+          )
+        }
+      }
+    } finally {
       setIsLoading(false)
       abortRef.current = null
     }
@@ -149,56 +149,62 @@ export function ChatbotWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-32px)] sm:w-[560px] h-[720px] max-h-[90vh] rounded-2xl border border-white/10 bg-gradient-to-b from-[#0e0e1a]/98 to-[#0a0a14]/98 backdrop-blur-2xl shadow-2xl shadow-violet-500/10 flex flex-col overflow-hidden"
+            className="fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-4 sm:left-auto z-50 sm:w-[420px] sm:h-[600px] flex flex-col overflow-hidden bg-[#0e0e1a]/98 backdrop-blur-2xl sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-violet-500/10"
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-2.5">
-                <Avatar fallback="AI" className="h-8 w-8 bg-gradient-to-br from-violet-500 to-indigo-600" />
+                <Avatar fallback="AI" className="h-9 w-9 bg-gradient-to-br from-violet-500 to-indigo-600" />
                 <div>
-                  <p className="text-sm font-medium">TerraVista AI</p>
-                  <p className="text-[10px] text-foreground/40">Online • Real Estate Assistant</p>
+                  <p className="text-sm font-semibold text-white">TerraVista AI</p>
+                  <p className="text-[11px] text-violet-400">Online • Real Estate Assistant</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsOpen(false)}
-                className="h-8 w-8"
+                className="h-8 w-8 rounded-full hover:bg-white/10"
               >
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-4 w-4 text-white/70" />
               </Button>
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin overscroll-contain">
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin overscroll-contain"
+            >
               {messages.map((msg, i) => {
                 const isStreaming = msg.role === "assistant" && msg.content === "" && isLoading && i === messages.length - 1
                 return (
                   <div
                     key={msg.id}
-                    className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+                    className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
                   >
                     {msg.role === "assistant" && (
-                      <Avatar fallback="AI" className="h-7 w-7 shrink-0 bg-gradient-to-br from-violet-500 to-indigo-600" />
+                      <Avatar
+                        fallback="AI"
+                        className="h-8 w-8 shrink-0 bg-gradient-to-br from-violet-500 to-indigo-600"
+                      />
                     )}
                     <div
-                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed break-words ${
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed break-words ${
                         msg.role === "user"
-                          ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-tr-sm"
-                          : "bg-white/5 border border-white/5 text-foreground/90 rounded-tl-sm"
+                          ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-tr-md"
+                          : "bg-white/5 border border-white/10 text-white/90 rounded-tl-md"
                       }`}
                     >
                       {isStreaming ? (
                         <TypingDots />
                       ) : msg.role === "assistant" ? (
-                        <div className="markdown-content text-sm leading-relaxed">
+                        <div className="text-[13px] sm:text-sm">
                           <ReactMarkdown
                             components={{
                               a: ({ href, children }) => (
                                 <a href={href} className="text-violet-400 underline underline-offset-2 hover:text-violet-300" target="_blank" rel="noreferrer">{children}</a>
                               ),
                               table: ({ children }) => (
-                                <div className="overflow-x-auto my-3">
-                                  <table className="min-w-full text-xs border border-white/10 rounded-lg overflow-hidden">
+                                <div className="overflow-x-auto my-3 -mx-1">
+                                  <table className="min-w-full text-[11px] sm:text-xs border border-white/10 rounded-lg overflow-hidden">
                                     {children}
                                   </table>
                                 </div>
@@ -207,17 +213,35 @@ export function ChatbotWidget() {
                                 <thead className="bg-violet-500/20">{children}</thead>
                               ),
                               th: ({ children }) => (
-                                <th className="px-3 py-2 text-left text-violet-300 font-medium">{children}</th>
+                                <th className="px-2 py-1.5 text-left text-violet-300 font-medium whitespace-nowrap">{children}</th>
                               ),
                               td: ({ children }) => (
-                                <td className="px-3 py-2 border-t border-white/10">{children}</td>
+                                <td className="px-2 py-1.5 border-t border-white/10 whitespace-nowrap">{children}</td>
                               ),
                               tr: ({ children }) => (
                                 <tr className="even:bg-white/5">{children}</tr>
                               ),
+                              p: ({ children }) => (
+                                <p className="mb-2 last:mb-0">{children}</p>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="list-disc list-inside space-y-1 mb-2">{children}</ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="list-decimal list-inside space-y-1 mb-2">{children}</ol>
+                              ),
+                              li: ({ children }) => (
+                                <li className="text-white/80">{children}</li>
+                              ),
+                              strong: ({ children }) => (
+                                <strong className="text-white font-semibold">{children}</strong>
+                              ),
+                              em: ({ children }) => (
+                                <em className="text-white/70">{children}</em>
+                              ),
                             }}
                           >
-{convertPipeTablesToMarkdown(msg.content)}
+                            {convertPipeTablesToMarkdown(msg.content)}
                           </ReactMarkdown>
                         </div>
                       ) : (
@@ -229,16 +253,16 @@ export function ChatbotWidget() {
               })}
             </div>
 
-            <div className="border-t border-white/10 p-3 space-y-2 shrink-0">
-              <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+            <div className="border-t border-white/10 p-3 space-y-2 shrink-0 bg-[#0a0a14]">
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
                 {prompts.slice(0, 3).map((p) => (
                   <button
                     key={p.id}
                     onClick={() => setInput(p.text)}
-                    className="shrink-0 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-foreground/60 hover:text-foreground hover:bg-white/10 whitespace-nowrap transition-colors"
+                    className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-violet-500/20 bg-violet-500/10 px-2.5 py-1.5 text-[11px] text-violet-300 hover:bg-violet-500/20 whitespace-nowrap transition-colors"
                   >
-                    <Sparkles className="h-3 w-3 text-violet-400" />
-                    {p.text}
+                    <Sparkles className="h-3 w-3" />
+                    {p.text.length > 25 ? p.text.slice(0, 25) + "..." : p.text}
                   </button>
                 ))}
               </div>
@@ -254,14 +278,14 @@ export function ChatbotWidget() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about any property..."
-                  className="flex-1 h-10 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-violet-500/50 transition-colors"
+                  className="flex-1 h-11 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 transition-colors"
                   disabled={isLoading}
                 />
                 <Button
                   type="submit"
                   size="icon"
                   disabled={!input.trim() || isLoading}
-                  className="h-10 w-10 shrink-0"
+                  className="h-11 w-11 shrink-0 bg-violet-600 hover:bg-violet-500"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
