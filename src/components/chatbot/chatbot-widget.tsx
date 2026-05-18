@@ -159,14 +159,7 @@ export function ChatbotWidget() {
                   <p className="text-[11px] text-violet-400">Online • Real Estate Assistant</p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="h-8 w-8 rounded-full hover:bg-white/10"
-              >
-                <ChevronDown className="h-4 w-4 text-white/70" />
-              </Button>
+              <div className="h-8 w-8 sm:block hidden" />
             </div>
 
             <div
@@ -282,10 +275,19 @@ export function ChatbotWidget() {
                   disabled={isLoading}
                 />
                 <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="h-11 w-11 shrink-0 hover:bg-white/10 sm:hidden flex"
+                >
+                  <X className="h-4 w-4 text-white/60" />
+                </Button>
+                <Button
                   type="submit"
                   size="icon"
                   disabled={!input.trim() || isLoading}
-                  className="h-11 w-11 shrink-0 bg-violet-600 hover:bg-violet-500"
+                  className="h-11 w-11 shrink-0 bg-violet-600 hover:bg-violet-500 sm:bg-violet-600 sm:hover:bg-violet-500"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
